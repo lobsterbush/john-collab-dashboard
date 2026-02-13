@@ -8,11 +8,8 @@
 // ============================================================================
 
 const CONFIG = {
-    // Your Google Sheet ID (from the URL: https://docs.google.com/spreadsheets/d/SHEET_ID/edit)
-    SHEET_ID: '1N283SOIKYVENHfbmeKagkbd8WdvBOmVa5TTc6tIBNdw',
-    
-    // The sheet gid (from the URL: gid=GID)
-    SHEET_GID: '690535049',
+    // Published Google Sheet CSV URL
+    SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcaV3c26B7OdZzLLRT3Ck3zqgdeMsjZ-grsZ3r0zTiBHITWnceSsFEUGm9d0eTFNJseNLtbbf9aDMA/pub?gid=690535049&single=true&output=csv',
     
     // Use local CSV file (set to false once Google Sheet is configured)
     USE_DEMO_DATA: false,
@@ -29,16 +26,17 @@ const COLUMNS = {
     TITLE: 1,
     ABSTRACT: 2,
     STATUS: 3,
-    SUBMISSION_DATE: 4,
-    TARGET_JOURNAL: 5,
-    PRIORITY: 6,
-    DEADLINE: 7,
-    IRB_STATUS: 8,
-    FUNDING: 9,
-    DOCS_LINK: 10,
-    COAUTHORS: 11,
-    KEYWORDS: 12,
-    LAST_ACTIVITY: 13
+    COLLABORATOR: 4,  // kept for compatibility but not used
+    SUBMISSION_DATE: 5,
+    TARGET_JOURNAL: 6,
+    PRIORITY: 7,
+    DEADLINE: 8,
+    IRB_STATUS: 9,
+    FUNDING: 10,
+    DOCS_LINK: 11,
+    COAUTHORS: 12,  // was "Notes" in sheet
+    KEYWORDS: 13,
+    LAST_ACTIVITY: 14
 };
 
 // ============================================================================
@@ -75,7 +73,7 @@ async function fetchProjects() {
     if (CONFIG.USE_DEMO_DATA) {
         csvUrl = CONFIG.DEMO_DATA_URL;
     } else {
-        csvUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/export?format=csv&gid=${CONFIG.SHEET_GID}`;
+        csvUrl = CONFIG.SHEET_CSV_URL;
     }
     
     try {
