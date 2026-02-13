@@ -8,8 +8,10 @@
 // ============================================================================
 
 const CONFIG = {
-    // Data source - using local CSV file
-    DATA_URL: 'data/projects.csv'
+    // Preferred data source (static JSON committed to repo)
+    DATA_URL_JSON: 'data/projects.json',
+    // Fallback to CSV if JSON not available
+    DATA_URL_CSV: 'data/projects.csv'
 };
 
 // ============================================================================
@@ -63,19 +65,26 @@ const elements = {
 // ============================================================================
 
 async function fetchProjects() {
+    // Try JSON first
     try {
-        const response = await fetch(CONFIG.DATA_URL);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        const r = await fetch(CONFIG.DATA_URL_JSON, { cache: 'no-store' });
+        if (r.ok) {
+            const payload = await r.json();
+            if (payload && Array.isArray(payload.projects)) return payload.projects;
+            if (Array.isArray(payload)) return payload; // plain array fallback
         }
-        
-        const csvText = await response.text();
-        return parseCSV(csvText);
-    } catch (error) {
-        console.error('Error fetching projects:', error);
-        throw error;
+        console.warn('JSON fetch failed or invalid, falling back to CSV');
+    } catch (e) {
+        console.warn('JSON fetch error, falling back to CSV:', e);
     }
+
+    // Fallback: CSV
+    const response = await fetch(CONFIG.DATA_URL_CSV, { cache: 'no-store' });
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const csvText = await response.text();
+    return parseCSV(csvText);
 }
 
 function parseCSV(csvText) {
