@@ -9,13 +9,13 @@
 
 const CONFIG = {
     // Your Google Sheet ID (from the URL: https://docs.google.com/spreadsheets/d/SHEET_ID/edit)
-    SHEET_ID: 'YOUR_SHEET_ID_HERE',
+    SHEET_ID: '1N283SOIKYVENHfbmeKagkbd8WdvBOmVa5TTc6tIBNdw',
     
     // The sheet/tab name
     SHEET_NAME: 'Sheet1',
     
     // Use local CSV file (set to false once Google Sheet is configured)
-    USE_DEMO_DATA: true,
+    USE_DEMO_DATA: false,
     DEMO_DATA_URL: 'data/demo_projects.csv'
 };
 

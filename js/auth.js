@@ -4,7 +4,7 @@
  */
 
 (function() {
-    const PASS_HASH = '2da0eb3a000b006a006e'; // Hash for 'john' - change this
+    const PASS_HASH = '4a091fa4000a00650073'; // Hash for 'erdosrules'
     const STORAGE_KEY = 'crabtree_holbein_auth';
     
     // Simple hash function
