@@ -31,9 +31,9 @@ A filterable dashboard for tracking research collaborations between Charles Crab
 
 ## Setup
 
-### 1. Create a Google Form
+### 1. Create a Google Sheet
 
-Create a Google Form with questions matching the fields above. Link it to a new Google Sheet.
+Create a Google Sheet with columns matching the fields above (in order).
 
 ### 2. Publish the Google Sheet
 
@@ -49,8 +49,7 @@ Edit `js/app.js` and update the `CONFIG` object:
 ```javascript
 const CONFIG = {
     SHEET_ID: 'your-google-sheet-id',
-    SHEET_NAME: 'Form Responses 1',
-    FORM_URL: 'your-google-form-url',
+    SHEET_NAME: 'Sheet1',
     USE_DEMO_DATA: false  // Set to false to use Google Sheet
 };
 ```

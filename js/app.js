@@ -11,13 +11,10 @@ const CONFIG = {
     // Your Google Sheet ID (from the URL: https://docs.google.com/spreadsheets/d/SHEET_ID/edit)
     SHEET_ID: 'YOUR_SHEET_ID_HERE',
     
-    // The sheet/tab name (default is usually "Form Responses 1" for form-linked sheets)
-    SHEET_NAME: 'Form Responses 1',
+    // The sheet/tab name
+    SHEET_NAME: 'Sheet1',
     
-    // Your Google Form URL for submissions
-    FORM_URL: 'YOUR_FORM_URL_HERE',
-    
-    // Use demo data from local CSV file (set to false once Google Sheet is configured)
+    // Use local CSV file (set to false once Google Sheet is configured)
     USE_DEMO_DATA: true,
     DEMO_DATA_URL: 'data/demo_projects.csv'
 };
@@ -63,7 +60,6 @@ const elements = {
     filterPriority: document.getElementById('filter-priority'),
     filterIRB: document.getElementById('filter-irb'),
     clearFilters: document.getElementById('clear-filters'),
-    submitLinkHeader: document.getElementById('submit-link-header'),
     projectsGrid: document.getElementById('projects'),
     resultsCount: document.getElementById('results-count'),
     lastUpdated: document.getElementById('last-updated'),
@@ -446,9 +442,6 @@ function setupEventListeners() {
     
     // Clear filters button
     elements.clearFilters.addEventListener('click', clearFilters);
-    
-    // Set form URL
-    elements.submitLinkHeader.href = CONFIG.FORM_URL;
 }
 
 // ============================================================================
