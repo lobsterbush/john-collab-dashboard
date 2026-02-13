@@ -15,7 +15,7 @@ const CONFIG = {
     SHEET_NAME: 'Sheet1',
     
     // Use local CSV file (set to false once Google Sheet is configured)
-    USE_DEMO_DATA: false,
+    USE_DEMO_DATA: true,
     DEMO_DATA_URL: 'data/demo_projects.csv'
 };
 
