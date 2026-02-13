@@ -292,7 +292,7 @@ function renderProjectCard(project) {
                     <span class="meta-icon">✓</span>
                     <span class="meta-content">
                         <span class="meta-label">IRB</span>
-                        <span class="meta-value">${escapeHtml(project.irbStatus)}</span>
+                        <span class="meta-value ${getIRBClass(project.irbStatus)}">${escapeHtml(project.irbStatus)}</span>
                     </span>
                 </div>
                 ` : ''}
@@ -352,10 +352,18 @@ function getStatusClass(status) {
 }
 
 function getPriorityClass(priority) {
-    const p = priority.toLowerCase();
+    const p = String(priority || '').toLowerCase();
     if (p === 'high') return 'priority-high';
     if (p === 'medium') return 'priority-medium';
     if (p === 'low') return 'priority-low';
+    return '';
+}
+
+function getIRBClass(status) {
+    const s = String(status || '').toLowerCase();
+    if (s.includes('approved')) return 'irb-approved';
+    if (s.includes('pending')) return 'irb-pending';
+    if (s.includes('not needed') || s === 'n/a' || s === 'na') return 'irb-na';
     return '';
 }
 

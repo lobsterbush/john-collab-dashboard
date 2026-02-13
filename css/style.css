@@ -27,6 +27,37 @@
     --transition-fast: 0.2s ease;
     --transition-med: 0.3s ease;
     --transition-slow: 0.5s ease;
+
+    /* Semantic colors */
+    /* Status */
+    --status-idea-bg: #FEF3C7;      /* amber-100 */
+    --status-idea-fg: #92400E;      /* amber-800 */
+    --status-design-bg: #EDE9FE;    /* violet-100 */
+    --status-design-fg: #5B21B6;    /* violet-800 */
+    --status-collected-bg: #D1FAE5; /* emerald-100 */
+    --status-collected-fg: #065F46; /* emerald-800 */
+    --status-analyzed-bg: #DBEAFE;  /* blue-100 */
+    --status-analyzed-fg: #1D4ED8;  /* blue-700 */
+    --status-writing-bg: #FFEDD5;   /* orange-100 */
+    --status-writing-fg: #9A3412;   /* orange-800 */
+    --status-submitted-bg: #DCFCE7; /* green-100 */
+    --status-submitted-fg: #166534; /* green-800 */
+
+    /* Priority */
+    --priority-high-bg: #FEE2E2;   /* red-100 */
+    --priority-high-fg: #B91C1C;   /* red-700 */
+    --priority-medium-bg: #FEF3C7; /* amber-100 */
+    --priority-medium-fg: #92400E; /* amber-800 */
+    --priority-low-bg: #E5E7EB;    /* gray-200 */
+    --priority-low-fg: #374151;    /* gray-700 */
+
+    /* IRB */
+    --irb-approved-bg: #DCFCE7;  /* green-100 */
+    --irb-approved-fg: #166534;  /* green-800 */
+    --irb-pending-bg: #FEF3C7;   /* amber-100 */
+    --irb-pending-fg: #92400E;   /* amber-800 */
+    --irb-na-bg: #F3F4F6;        /* gray-100 */
+    --irb-na-fg: #374151;        /* gray-700 */
 }
 
 * {
@@ -401,6 +432,28 @@ main {
 }
 
 /* Project Metadata Grid */
+
+/* IRB meta coloring */
+.meta-value.irb-approved {
+    background: var(--irb-approved-bg);
+    color: var(--irb-approved-fg);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+.meta-value.irb-pending {
+    background: var(--irb-pending-bg);
+    color: var(--irb-pending-fg);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+.meta-value.irb-na {
+    background: var(--irb-na-bg);
+    color: var(--irb-na-fg);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+
+/* Project Metadata Grid */
 .project-meta-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -467,39 +520,39 @@ main {
 }
 
 .status-idea {
-    background: #f5f5f5;
-    color: #666;
-    border: 1px solid #ddd;
+    background: var(--status-idea-bg);
+    color: var(--status-idea-fg);
+    border: 1px solid rgba(146, 64, 14, 0.25);
 }
 
 .status-design {
-    background: #e8e8e8;
-    color: #555;
-    border: 1px solid #ccc;
+    background: var(--status-design-bg);
+    color: var(--status-design-fg);
+    border: 1px solid rgba(91, 33, 182, 0.25);
 }
 
 .status-collected {
-    background: #ddd;
-    color: #444;
-    border: 1px solid #bbb;
+    background: var(--status-collected-bg);
+    color: var(--status-collected-fg);
+    border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 .status-analyzed {
-    background: #ccc;
-    color: #333;
-    border: 1px solid #aaa;
+    background: var(--status-analyzed-bg);
+    color: var(--status-analyzed-fg);
+    border: 1px solid rgba(29, 78, 216, 0.25);
 }
 
 .status-writing {
-    background: #999;
-    color: #fff;
-    border: 1px solid #888;
+    background: var(--status-writing-bg);
+    color: var(--status-writing-fg);
+    border: 1px solid rgba(154, 52, 18, 0.25);
 }
 
 .status-submitted {
-    background: #333;
-    color: #fff;
-    border: 1px solid #222;
+    background: var(--status-submitted-bg);
+    color: var(--status-submitted-fg);
+    border: 1px solid rgba(22, 101, 52, 0.25);
 }
 
 /* Priority indicator */
@@ -514,18 +567,18 @@ main {
 }
 
 .priority-high {
-    background: #1a1a1a;
-    color: #fff;
+    background: var(--priority-high-bg);
+    color: var(--priority-high-fg);
 }
 
 .priority-medium {
-    background: #888;
-    color: #fff;
+    background: var(--priority-medium-bg);
+    color: var(--priority-medium-fg);
 }
 
 .priority-low {
-    background: #e5e5e5;
-    color: #666;
+    background: var(--priority-low-bg);
+    color: var(--priority-low-fg);
 }
 
 /* Info Sections */
