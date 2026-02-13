@@ -337,7 +337,7 @@ function getPriorityClass(priority) {
     return '';
 }
 
-function updateResultsCount()
+function updateResultsCount() {
     const total = allProjects.length;
     const showing = filteredProjects.length;
     
@@ -365,6 +365,24 @@ function updateResultsCount()
 // ============================================================================
 // Utilities
 // ============================================================================
+
+function showError(message) {
+    if (elements.loading) elements.loading.style.display = 'none';
+    if (elements.error) {
+        elements.error.style.display = 'block';
+        elements.error.innerHTML = `<p><strong>Error</strong></p><pre style="white-space:pre-wrap;text-align:left">${escapeHtml(String(message))}</pre>`;
+    } else {
+        console.error(message);
+    }
+}
+
+// Surface uncaught errors to the UI
+window.addEventListener('error', (e) => {
+    showError(`${e.message} (at ${e.filename}:${e.lineno}:${e.colno})`);
+});
+window.addEventListener('unhandledrejection', (e) => {
+    showError(`Unhandled promise rejection: ${e.reason}`);
+});
 
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -416,28 +434,16 @@ function setupEventListeners() {
 async function init() {
     setupEventListeners();
     
-    // Check if configuration is set (skip check if using demo data)
-    if (!CONFIG.USE_DEMO_DATA && CONFIG.SHEET_ID === 'YOUR_SHEET_ID_HERE') {
-        elements.loading.style.display = 'none';
-        elements.error.style.display = 'block';
-        elements.error.innerHTML = `
-            <p><strong>Configuration Required</strong></p>
-            <p>Please update the CONFIG object in js/app.js with your Google Sheet ID and Form URL.</p>
-        `;
-        return;
-    }
-    
     try {
         allProjects = await fetchProjects();
-        filteredProjects = [...allProjects];
+        filteredProjects = Array.isArray(allProjects) ? [...allProjects] : [];
         
-        elements.loading.style.display = 'none';
+        if (elements.loading) elements.loading.style.display = 'none';
         
         renderProjects();
         updateResultsCount();
     } catch (error) {
-        elements.loading.style.display = 'none';
-        elements.error.style.display = 'block';
+        showError(`Failed to initialize: ${error && error.message ? error.message : error}`);
         console.error('Failed to initialize:', error);
     }
 }
