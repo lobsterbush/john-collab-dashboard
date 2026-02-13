@@ -65,7 +65,12 @@ const elements = {
 // ============================================================================
 
 async function fetchProjects() {
-    // Try JSON first
+    // 0) If embedded global exists (works over file://), use it immediately
+    if (window.__PROJECTS__ && Array.isArray(window.__PROJECTS__.projects)) {
+        return window.__PROJECTS__.projects;
+    }
+
+    // 1) Try JSON first (works over http/https)
     try {
         const r = await fetch(CONFIG.DATA_URL_JSON, { cache: 'no-store' });
         if (r.ok) {
@@ -78,13 +83,21 @@ async function fetchProjects() {
         console.warn('JSON fetch error, falling back to CSV:', e);
     }
 
-    // Fallback: CSV
-    const response = await fetch(CONFIG.DATA_URL_CSV, { cache: 'no-store' });
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    // 2) Fallback: CSV
+    try {
+        const response = await fetch(CONFIG.DATA_URL_CSV, { cache: 'no-store' });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const csvText = await response.text();
+        return parseCSV(csvText);
+    } catch (e) {
+        // 3) Last resort: embedded global again (maybe script loaded after)
+        if (window.__PROJECTS__ && Array.isArray(window.__PROJECTS__.projects)) {
+            return window.__PROJECTS__.projects;
+        }
+        throw e;
     }
-    const csvText = await response.text();
-    return parseCSV(csvText);
 }
 
 function parseCSV(csvText) {
