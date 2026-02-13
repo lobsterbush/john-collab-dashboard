@@ -11,11 +11,11 @@ const CONFIG = {
     // Your Google Sheet ID (from the URL: https://docs.google.com/spreadsheets/d/SHEET_ID/edit)
     SHEET_ID: '1N283SOIKYVENHfbmeKagkbd8WdvBOmVa5TTc6tIBNdw',
     
-    // The sheet/tab name
-    SHEET_NAME: 'Sheet1',
+    // The sheet gid (from the URL: gid=GID)
+    SHEET_GID: '690535049',
     
     // Use local CSV file (set to false once Google Sheet is configured)
-    USE_DEMO_DATA: true,
+    USE_DEMO_DATA: false,
     DEMO_DATA_URL: 'data/demo_projects.csv'
 };
 
@@ -75,7 +75,7 @@ async function fetchProjects() {
     if (CONFIG.USE_DEMO_DATA) {
         csvUrl = CONFIG.DEMO_DATA_URL;
     } else {
-        csvUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}`;
+        csvUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/export?format=csv&gid=${CONFIG.SHEET_GID}`;
     }
     
     try {
