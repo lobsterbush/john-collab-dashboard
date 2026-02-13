@@ -8,12 +8,8 @@
 // ============================================================================
 
 const CONFIG = {
-    // Published Google Sheet CSV URL
-    SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcaV3c26B7OdZzLLRT3Ck3zqgdeMsjZ-grsZ3r0zTiBHITWnceSsFEUGm9d0eTFNJseNLtbbf9aDMA/pub?gid=690535049&single=true&output=csv',
-    
-    // Use local CSV file (set to false once Google Sheet is configured)
-    USE_DEMO_DATA: false,
-    DEMO_DATA_URL: 'data/demo_projects.csv'
+    // Data source - using local CSV file
+    DATA_URL: 'data/projects.csv'
 };
 
 // ============================================================================
@@ -26,17 +22,16 @@ const COLUMNS = {
     TITLE: 1,
     ABSTRACT: 2,
     STATUS: 3,
-    COLLABORATOR: 4,  // kept for compatibility but not used
-    SUBMISSION_DATE: 5,
-    TARGET_JOURNAL: 6,
-    PRIORITY: 7,
-    DEADLINE: 8,
-    IRB_STATUS: 9,
-    FUNDING: 10,
-    DOCS_LINK: 11,
-    COAUTHORS: 12,  // was "Notes" in sheet
-    KEYWORDS: 13,
-    LAST_ACTIVITY: 14
+    SUBMISSION_DATE: 4,
+    TARGET_JOURNAL: 5,
+    PRIORITY: 6,
+    DEADLINE: 7,
+    IRB_STATUS: 8,
+    FUNDING: 9,
+    DOCS_LINK: 10,
+    COAUTHORS: 11,
+    KEYWORDS: 12,
+    LAST_ACTIVITY: 13
 };
 
 // ============================================================================
@@ -68,16 +63,8 @@ const elements = {
 // ============================================================================
 
 async function fetchProjects() {
-    let csvUrl;
-    
-    if (CONFIG.USE_DEMO_DATA) {
-        csvUrl = CONFIG.DEMO_DATA_URL;
-    } else {
-        csvUrl = CONFIG.SHEET_CSV_URL;
-    }
-    
     try {
-        const response = await fetch(csvUrl);
+        const response = await fetch(CONFIG.DATA_URL);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
