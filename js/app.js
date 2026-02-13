@@ -29,17 +29,16 @@ const COLUMNS = {
     TITLE: 1,
     ABSTRACT: 2,
     STATUS: 3,
-    COLLABORATOR: 4,
-    SUBMISSION_DATE: 5,
-    TARGET_JOURNAL: 6,
-    PRIORITY: 7,
-    DEADLINE: 8,
-    IRB_STATUS: 9,
-    FUNDING: 10,
-    DOCS_LINK: 11,
-    NOTES: 12,
-    KEYWORDS: 13,
-    LAST_ACTIVITY: 14
+    SUBMISSION_DATE: 4,
+    TARGET_JOURNAL: 5,
+    PRIORITY: 6,
+    DEADLINE: 7,
+    IRB_STATUS: 8,
+    FUNDING: 9,
+    DOCS_LINK: 10,
+    COAUTHORS: 11,
+    KEYWORDS: 12,
+    LAST_ACTIVITY: 13
 };
 
 // ============================================================================
@@ -55,7 +54,6 @@ let filteredProjects = [];
 
 const elements = {
     search: document.getElementById('search'),
-    filterCollaborator: document.getElementById('filter-collaborator'),
     filterStatus: document.getElementById('filter-status'),
     filterPriority: document.getElementById('filter-priority'),
     filterIRB: document.getElementById('filter-irb'),
@@ -109,7 +107,6 @@ function parseCSV(csvText) {
                 title: row[COLUMNS.TITLE] || '',
                 abstract: row[COLUMNS.ABSTRACT] || '',
                 status: row[COLUMNS.STATUS] || '',
-                collaborator: row[COLUMNS.COLLABORATOR] || '',
                 submissionDate: row[COLUMNS.SUBMISSION_DATE] || '',
                 targetJournal: row[COLUMNS.TARGET_JOURNAL] || '',
                 priority: row[COLUMNS.PRIORITY] || '',
@@ -117,7 +114,7 @@ function parseCSV(csvText) {
                 irbStatus: row[COLUMNS.IRB_STATUS] || '',
                 funding: row[COLUMNS.FUNDING] || '',
                 docsLink: row[COLUMNS.DOCS_LINK] || '',
-                notes: row[COLUMNS.NOTES] || '',
+                coauthors: row[COLUMNS.COAUTHORS] || '',
                 keywords: row[COLUMNS.KEYWORDS] || '',
                 lastActivity: row[COLUMNS.LAST_ACTIVITY] || ''
             });
@@ -160,7 +157,6 @@ function parseCSVRow(row) {
 
 function applyFilters() {
     const searchTerm = elements.search.value.toLowerCase();
-    const collaboratorFilter = elements.filterCollaborator.value;
     const statusFilter = elements.filterStatus.value;
     const priorityFilter = elements.filterPriority.value;
     const irbFilter = elements.filterIRB.value;
@@ -168,15 +164,10 @@ function applyFilters() {
     filteredProjects = allProjects.filter(project => {
         // Search filter
         if (searchTerm) {
-            const searchableText = `${project.title} ${project.abstract} ${project.keywords} ${project.notes}`.toLowerCase();
+            const searchableText = `${project.title} ${project.abstract} ${project.keywords} ${project.coauthors}`.toLowerCase();
             if (!searchableText.includes(searchTerm)) {
                 return false;
             }
-        }
-        
-        // Collaborator filter
-        if (collaboratorFilter && project.collaborator !== collaboratorFilter) {
-            return false;
         }
         
         // Status filter
@@ -203,7 +194,6 @@ function applyFilters() {
 
 function clearFilters() {
     elements.search.value = '';
-    elements.filterCollaborator.value = '';
     elements.filterStatus.value = '';
     elements.filterPriority.value = '';
     elements.filterIRB.value = '';
@@ -238,7 +228,6 @@ function renderProjects() {
 function renderProjectCard(project) {
     const statusClass = getStatusClass(project.status);
     const priorityClass = getPriorityClass(project.priority);
-    const collaboratorClass = getCollaboratorClass(project.collaborator);
     const keywordsHtml = renderKeywords(project.keywords);
     
     const titleHtml = project.docsLink 
@@ -253,7 +242,6 @@ function renderProjectCard(project) {
     
     return `
         <article class="project-card">
-            <span class="collaborator-badge ${collaboratorClass}">${escapeHtml(project.collaborator)}</span>
             <h2>${titleHtml}</h2>
             <p class="project-abstract">${escapeHtml(project.abstract)}</p>
             
@@ -312,13 +300,13 @@ function renderProjectCard(project) {
                 ` : ''}
             </div>
             
-            ${project.notes ? `
+            ${project.coauthors ? `
             <div class="info-section">
                 <div class="info-header">
-                    <span class="meta-icon">📝</span>
-                    <span class="meta-label">Notes</span>
+                    <span class="meta-icon">👥</span>
+                    <span class="meta-label">Coauthors</span>
                 </div>
-                <div class="info-content">${escapeHtml(project.notes)}</div>
+                <div class="info-content">${escapeHtml(project.coauthors)}</div>
             </div>
             ` : ''}
             
@@ -364,14 +352,7 @@ function getPriorityClass(priority) {
     return '';
 }
 
-function getCollaboratorClass(collaborator) {
-    const c = collaborator.toLowerCase();
-    if (c.includes('charles') && !c.includes('john') && !c.includes('both')) return 'collaborator-charles';
-    if (c.includes('john') && !c.includes('charles') && !c.includes('both')) return 'collaborator-john';
-    return 'collaborator-both';
-}
-
-function updateResultsCount() {
+function updateResultsCount()
     const total = allProjects.length;
     const showing = filteredProjects.length;
     
@@ -435,7 +416,6 @@ function setupEventListeners() {
     });
     
     // Filter dropdowns
-    elements.filterCollaborator.addEventListener('change', applyFilters);
     elements.filterStatus.addEventListener('change', applyFilters);
     elements.filterPriority.addEventListener('change', applyFilters);
     elements.filterIRB.addEventListener('change', applyFilters);
