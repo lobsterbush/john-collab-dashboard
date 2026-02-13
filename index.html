@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crabtree & Holbein Projects</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Password Protection Overlay -->
+    <div id="password-overlay">
+        <div class="password-modal">
+            <h2>Crabtree & Holbein Projects</h2>
+            <p>Collaborative research tracker</p>
+            <input type="password" id="password-input" placeholder="Enter password" autofocus>
+            <button id="password-submit">Enter</button>
+            <p id="password-error"></p>
+        </div>
+    </div>
+
+    <header>
+        <h1>Crabtree & Holbein Projects</h1>
+        <p class="subtitle">Research collaboration tracker</p>
+        <div class="header-actions">
+            <a href="#" id="submit-link-header" class="btn-primary btn-large" target="_blank">Add Project</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="controls">
+            <div class="search-container">
+                <input type="text" id="search" placeholder="Search projects..." aria-label="Search projects">
+            </div>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="filter-collaborator">Collaborator</label>
+                    <select id="filter-collaborator">
+                        <option value="">All</option>
+                        <option value="Charles only">Charles only</option>
+                        <option value="John only">John only</option>
+                        <option value="Both">Both</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filter-status">Status</label>
+                    <select id="filter-status">
+                        <option value="">All Statuses</option>
+                        <option value="Idea">Idea</option>
+                        <option value="Research design">Research design</option>
+                        <option value="Data collected">Data collected</option>
+                        <option value="Data analyzed">Data analyzed</option>
+                        <option value="Writing">Writing</option>
+                        <option value="Submitted">Submitted</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filter-priority">Priority</label>
+                    <select id="filter-priority">
+                        <option value="">All</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filter-irb">IRB Status</label>
+                    <select id="filter-irb">
+                        <option value="">All</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Not needed">Not needed</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button id="clear-filters" class="btn-secondary">Clear Filters</button>
+            </div>
+        </section>
+
+        <section class="results-info">
+            <span id="results-count">Loading...</span>
+            <span id="last-updated" class="last-updated"></span>
+        </section>
+
+        <section id="projects" class="project-grid">
+            <!-- Projects will be rendered here -->
+        </section>
+
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading projects...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            <p>Unable to load projects. Please check the configuration.</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>Crabtree & Holbein Research Collaboration</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
