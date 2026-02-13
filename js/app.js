@@ -10,7 +10,9 @@
 const CONFIG = {
     // Preferred data source (static JSON committed to repo)
     DATA_URL_JSON: 'data/projects.json',
-    // Fallback to CSV if JSON not available
+    // Google Sheets published CSV (provided by you)
+    SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcaV3c26B7OdZzLLRT3Ck3zqgdeMsjZ-grsZ3r0zTiBHITWnceSsFEUGm9d0eTFNJseNLtbbf9aDMA/pub?gid=690535049&single=true&output=csv',
+    // Fallback to local CSV if others not available
     DATA_URL_CSV: 'data/projects.csv'
 };
 
@@ -42,6 +44,7 @@ const COLUMNS = {
 
 let allProjects = [];
 let filteredProjects = [];
+let currentSource = 'embedded'; // embedded | json | sheets | csv
 
 // ============================================================================
 // DOM Elements
@@ -64,40 +67,53 @@ const elements = {
 // Data Fetching
 // ============================================================================
 
-async function fetchProjects() {
-    // 0) If embedded global exists (works over file://), use it immediately
-    if (window.__PROJECTS__ && Array.isArray(window.__PROJECTS__.projects)) {
-        return window.__PROJECTS__.projects;
-    }
-
-    // 1) Try JSON first (works over http/https)
-    try {
-        const r = await fetch(CONFIG.DATA_URL_JSON, { cache: 'no-store' });
-        if (r.ok) {
-            const payload = await r.json();
-            if (payload && Array.isArray(payload.projects)) return payload.projects;
-            if (Array.isArray(payload)) return payload; // plain array fallback
-        }
-        console.warn('JSON fetch failed or invalid, falling back to CSV');
-    } catch (e) {
-        console.warn('JSON fetch error, falling back to CSV:', e);
-    }
-
-    // 2) Fallback: CSV
-    try {
-        const response = await fetch(CONFIG.DATA_URL_CSV, { cache: 'no-store' });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const csvText = await response.text();
-        return parseCSV(csvText);
-    } catch (e) {
-        // 3) Last resort: embedded global again (maybe script loaded after)
+async function fetchProjects(preferred = 'auto') {
+    // 0) Embedded global (works over file://)
+    if (preferred === 'embedded' || preferred === 'auto') {
         if (window.__PROJECTS__ && Array.isArray(window.__PROJECTS__.projects)) {
+            currentSource = 'embedded';
             return window.__PROJECTS__.projects;
         }
-        throw e;
     }
+
+    // 1) JSON (http/https)
+    if (preferred === 'json' || preferred === 'auto') {
+        try {
+            const r = await fetch(CONFIG.DATA_URL_JSON, { cache: 'no-store' });
+            if (r.ok) {
+                const payload = await r.json();
+                if (payload && Array.isArray(payload.projects)) { currentSource = 'json'; return payload.projects; }
+                if (Array.isArray(payload)) { currentSource = 'json'; return payload; }
+            }
+            console.warn('JSON fetch failed or invalid');
+        } catch (e) {
+            console.warn('JSON fetch error:', e);
+        }
+    }
+
+    // 2) Google Sheets CSV
+    if (preferred === 'sheets' || preferred === 'auto') {
+        try {
+            const bust = `&_ts=${Date.now()}`;
+            const response = await fetch(CONFIG.SHEET_CSV_URL + bust, { cache: 'no-store' });
+            if (response.ok) {
+                const txt = await response.text();
+                currentSource = 'sheets';
+                return parseCSV(txt);
+            }
+        } catch (e) {
+            console.warn('Sheets fetch error:', e);
+        }
+    }
+
+    // 3) Local CSV
+    const response = await fetch(CONFIG.DATA_URL_CSV, { cache: 'no-store' });
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    currentSource = 'csv';
+    const csvText = await response.text();
+    return parseCSV(csvText);
 }
 
 function parseCSV(csvText) {
@@ -254,7 +270,7 @@ function renderProjectCard(project) {
             
             <div class="project-meta-grid">
                 <div class="meta-item">
-                    <span class="meta-icon">📊</span>
+                    <span class="meta-icon icon-badge ${statusClass}">📊</span>
                     <span class="meta-content">
                         <span class="meta-label">Status</span>
                         <span class="status-badge ${statusClass}">${escapeHtml(project.status)}</span>
@@ -262,7 +278,7 @@ function renderProjectCard(project) {
                 </div>
                 ${project.priority ? `
                 <div class="meta-item">
-                    <span class="meta-icon">⚡</span>
+                    <span class="meta-icon icon-badge">⚡</span>
                     <span class="meta-content">
                         <span class="meta-label">Priority</span>
                         <span class="priority-badge ${priorityClass}">${escapeHtml(project.priority)}</span>
@@ -271,16 +287,16 @@ function renderProjectCard(project) {
                 ` : ''}
                 ${project.targetJournal && project.status !== 'Submitted' ? `
                 <div class="meta-item">
-                    <span class="meta-icon">📚</span>
+                    <span class="meta-icon icon-badge">📚</span>
                     <span class="meta-content">
                         <span class="meta-label">Target</span>
                         <span class="meta-value">${escapeHtml(project.targetJournal)}</span>
                     </span>
                 </div>
                 ` : ''}
-                ${project.deadline ? `
+${project.deadline ? `
                 <div class="meta-item">
-                    <span class="meta-icon">📅</span>
+                    <span class="meta-icon icon-badge">📅</span>
                     <span class="meta-content">
                         <span class="meta-label">Deadline</span>
                         <span class="meta-value">${escapeHtml(project.deadline)}</span>
@@ -289,7 +305,7 @@ function renderProjectCard(project) {
                 ` : ''}
                 ${project.irbStatus ? `
                 <div class="meta-item">
-                    <span class="meta-icon">✓</span>
+                    <span class="meta-icon icon-badge">✓</span>
                     <span class="meta-content">
                         <span class="meta-label">IRB</span>
                         <span class="meta-value ${getIRBClass(project.irbStatus)}">${escapeHtml(project.irbStatus)}</span>
@@ -298,7 +314,7 @@ function renderProjectCard(project) {
                 ` : ''}
                 ${project.funding ? `
                 <div class="meta-item">
-                    <span class="meta-icon">💰</span>
+                    <span class="meta-icon icon-badge">💰</span>
                     <span class="meta-content">
                         <span class="meta-label">Funding</span>
                         <span class="meta-value">${escapeHtml(project.funding)}</span>
@@ -310,7 +326,7 @@ function renderProjectCard(project) {
             ${project.coauthors ? `
             <div class="info-section">
                 <div class="info-header">
-                    <span class="meta-icon">👥</span>
+                    <span class="meta-icon icon-badge">👥</span>
                     <span class="meta-label">Coauthors</span>
                 </div>
                 <div class="info-content">${escapeHtml(project.coauthors)}</div>
@@ -387,7 +403,7 @@ function updateResultsCount() {
                 month: 'short', 
                 day: 'numeric'
             });
-            elements.lastUpdated.textContent = `Last updated: ${formattedDate}`;
+            elements.lastUpdated.textContent = `Last updated: ${formattedDate} • Source: ${currentSource}`;
         }
     }
 }
@@ -455,6 +471,24 @@ function setupEventListeners() {
     
     // Clear filters button
     elements.clearFilters.addEventListener('click', clearFilters);
+
+    // Refresh from Google Sheets
+    const refreshBtn = document.getElementById('refresh-data');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', async () => {
+            elements.loading.style.display = 'block';
+            try {
+                allProjects = await fetchProjects('sheets');
+                filteredProjects = [...allProjects];
+                renderProjects();
+                updateResultsCount();
+            } catch (e) {
+                showError(`Refresh failed: ${e}`);
+            } finally {
+                elements.loading.style.display = 'none';
+            }
+        });
+    }
 }
 
 // ============================================================================
@@ -465,7 +499,7 @@ async function init() {
     setupEventListeners();
     
     try {
-        allProjects = await fetchProjects();
+        allProjects = await fetchProjects('auto');
         filteredProjects = Array.isArray(allProjects) ? [...allProjects] : [];
         
         if (elements.loading) elements.loading.style.display = 'none';
