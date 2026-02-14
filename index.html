@@ -21,8 +21,19 @@
     <header>
         <h1>Crabtree & Holbein Projects</h1>
         <p class="subtitle">Research collaboration tracker</p>
-        <div class="header-actions">
+        <div class="header-actions refresh-controls">
             <button id="refresh-data" class="btn-primary btn-large">Refresh from Google Sheets</button>
+            <label class="switch">
+                <input type="checkbox" id="auto-refresh-toggle">
+                <span class="slider"></span>
+            </label>
+            <span class="switch-label">Auto-refresh every 
+                <select id="auto-refresh-interval">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="30">30</option>
+                </select> min
+            </span>
         </div>
     </header>
 
@@ -75,6 +86,36 @@
         <section class="results-info">
             <span id="results-count">Loading...</span>
             <span id="last-updated" class="last-updated"></span>
+        </section>
+
+        <section class="legend" aria-label="Legend">
+            <div class="legend-group">
+                <div class="legend-title">Status</div>
+                <div class="legend-items">
+                    <span class="status-badge status-idea">Idea</span>
+                    <span class="status-badge status-design">Research design</span>
+                    <span class="status-badge status-collected">Data collected</span>
+                    <span class="status-badge status-analyzed">Data analyzed</span>
+                    <span class="status-badge status-writing">Writing</span>
+                    <span class="status-badge status-submitted">Submitted</span>
+                </div>
+            </div>
+            <div class="legend-group">
+                <div class="legend-title">Priority</div>
+                <div class="legend-items">
+                    <span class="priority-badge priority-high">High</span>
+                    <span class="priority-badge priority-medium">Medium</span>
+                    <span class="priority-badge priority-low">Low</span>
+                </div>
+            </div>
+            <div class="legend-group">
+                <div class="legend-title">IRB</div>
+                <div class="legend-items">
+                    <span class="meta-value irb-approved">Approved</span>
+                    <span class="meta-value irb-pending">Pending</span>
+                    <span class="meta-value irb-na">Not needed</span>
+                </div>
+            </div>
         </section>
 
         <section id="projects" class="project-grid">

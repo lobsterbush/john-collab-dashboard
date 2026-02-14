@@ -13,7 +13,9 @@ const CONFIG = {
     // Google Sheets published CSV (provided by you)
     SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcaV3c26B7OdZzLLRT3Ck3zqgdeMsjZ-grsZ3r0zTiBHITWnceSsFEUGm9d0eTFNJseNLtbbf9aDMA/pub?gid=690535049&single=true&output=csv',
     // Fallback to local CSV if others not available
-    DATA_URL_CSV: 'data/projects.csv'
+    DATA_URL_CSV: 'data/projects.csv',
+    // Auto-refresh defaults
+    AUTO_REFRESH_DEFAULT_MIN: 10
 };
 
 // ============================================================================
@@ -45,6 +47,7 @@ const COLUMNS = {
 let allProjects = [];
 let filteredProjects = [];
 let currentSource = 'embedded'; // embedded | json | sheets | csv
+let autoRefreshTimer = null;
 
 // ============================================================================
 // DOM Elements
@@ -60,7 +63,10 @@ const elements = {
     resultsCount: document.getElementById('results-count'),
     lastUpdated: document.getElementById('last-updated'),
     loading: document.getElementById('loading'),
-    error: document.getElementById('error')
+    error: document.getElementById('error'),
+    refreshBtn: document.getElementById('refresh-data'),
+    autoToggle: document.getElementById('auto-refresh-toggle'),
+    autoInterval: document.getElementById('auto-refresh-interval')
 };
 
 // ============================================================================
@@ -473,21 +479,52 @@ function setupEventListeners() {
     elements.clearFilters.addEventListener('click', clearFilters);
 
     // Refresh from Google Sheets
-    const refreshBtn = document.getElementById('refresh-data');
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', async () => {
-            elements.loading.style.display = 'block';
-            try {
-                allProjects = await fetchProjects('sheets');
-                filteredProjects = [...allProjects];
-                renderProjects();
-                updateResultsCount();
-            } catch (e) {
-                showError(`Refresh failed: ${e}`);
-            } finally {
-                elements.loading.style.display = 'none';
-            }
-        });
+    if (elements.refreshBtn) {
+        elements.refreshBtn.addEventListener('click', () => refreshFromSheets());
+    }
+
+    // Auto-refresh controls
+    if (elements.autoToggle && elements.autoInterval) {
+        const savedOn = localStorage.getItem('autoRefreshOn') === 'true';
+        const savedMin = parseInt(localStorage.getItem('autoRefreshMin') || CONFIG.AUTO_REFRESH_DEFAULT_MIN, 10);
+        elements.autoToggle.checked = savedOn;
+        elements.autoInterval.value = String(savedMin);
+
+        elements.autoToggle.addEventListener('change', () => applyAutoRefresh());
+        elements.autoInterval.addEventListener('change', () => applyAutoRefresh());
+        applyAutoRefresh();
+    }
+}
+
+async function refreshFromSheets() {
+    if (!elements.refreshBtn) return;
+    const original = elements.refreshBtn.textContent;
+    elements.refreshBtn.disabled = true;
+    elements.refreshBtn.textContent = 'Refreshing…';
+    elements.loading.style.display = 'block';
+    try {
+        allProjects = await fetchProjects('sheets');
+        filteredProjects = [...allProjects];
+        renderProjects();
+        updateResultsCount();
+    } catch (e) {
+        showError(`Refresh failed: ${e}`);
+    } finally {
+        elements.loading.style.display = 'none';
+        elements.refreshBtn.disabled = false;
+        elements.refreshBtn.textContent = original;
+    }
+}
+
+function applyAutoRefresh() {
+    const on = elements.autoToggle.checked;
+    const minutes = parseInt(elements.autoInterval.value || CONFIG.AUTO_REFRESH_DEFAULT_MIN, 10);
+    localStorage.setItem('autoRefreshOn', String(on));
+    localStorage.setItem('autoRefreshMin', String(minutes));
+
+    if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
+    if (on) {
+        autoRefreshTimer = setInterval(refreshFromSheets, minutes * 60 * 1000);
     }
 }
 
